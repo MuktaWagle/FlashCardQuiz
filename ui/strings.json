@@ -1,0 +1,20 @@
+{
+  "title": "Flash Card Quizz",
+  "labels": {
+    "topic": "Select Topic",
+    "difficulty": "Difficulty Level",
+    "questionCount": "Number of Questions"
+  },
+  "placeholders": {
+    "topic": "-- Choose a topic --"
+  },
+  "buttons": {
+    "start": "Start Quiz"
+  },
+  "form": {
+    "difficultyName": "difficulty"
+  },
+  "messages": {
+    "startingQuiz": "Starting quiz: {topic}, {difficulty}, {numQuestions} questions"
+  }
+}
