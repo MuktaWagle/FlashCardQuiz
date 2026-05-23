@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { FlashCardSet } from "../app/flashCard";
 import { QuizSettings } from "./quizOptions";
-import { styles } from "./styles";
 
 type QuestionProps = {
     settings: QuizSettings;
@@ -45,8 +44,8 @@ export default function Question({ settings, flashCardSet, onQuizComplete }: Que
 
     if (!currentCard) {
         return (
-            <div style={styles.container}>
-                <h2 style={styles.title}>No questions available.</h2>
+            <div className="quiz-container">
+                <h2 className="quiz-title">No questions available.</h2>
             </div>
         );
     }
@@ -99,21 +98,21 @@ export default function Question({ settings, flashCardSet, onQuizComplete }: Que
     };
 
     return (
-        <div style={styles.container}>
-            <h1 style={styles.title}>{settings.topic} Quiz</h1>
-            <p style={styles.label}>
+        <div className="quiz-container">
+            <h1 className="quiz-title">{settings.topic} Quiz</h1>
+            <p className="quiz-meta">
                 Question {currentQuestionIndex + 1} of {flashCardSet.cards.length}
             </p>
 
-            <div style={styles.form}>
-                <div style={styles.field}>
-                    <label style={styles.label}>{currentCard.question}</label>
-                    <div style={styles.field}>
-                        {displayedOptions.map((option) => (
-                            <label key={option} style={styles.radioLabel}>
+            <div className="quiz-form">
+                <div className="quiz-field">
+                    <label className="quiz-label question-label">{currentCard.question}</label>
+                    <div className="options-group">
+                        {displayedOptions.map((option, optionIndex) => (
+                            <label key={`${currentQuestionIndex}-${optionIndex}-${option}`} className="quiz-radio-label">
                                 <input
                                     type="radio"
-                                    name="question-option"
+                                    name={`question-option-${currentQuestionIndex}`}
                                     value={option}
                                     checked={selectedOption === option}
                                     onChange={(e) => setSelectedOption(e.target.value)}
@@ -124,20 +123,20 @@ export default function Question({ settings, flashCardSet, onQuizComplete }: Que
                     </div>
                 </div>
 
-                <button onClick={handleSubmit} style={styles.button}>
+                <button onClick={handleSubmit} className="quiz-button">
                     Submit
                 </button>
             </div>
 
             {dialogState.isOpen && (
-                <div style={styles.dialogOverlay}>
-                    <div style={styles.dialogBox} role="dialog" aria-modal="true">
-                        <p style={styles.dialogMessage}>{dialogState.message}</p>
-                        <button onClick={handleDialogClose} style={styles.dialogButton}>
+                <div className="dialog-overlay">
+                    <div className="dialog-box" role="dialog" aria-modal="true">
+                        <p className="dialog-message">{dialogState.message}</p>
+                        <button onClick={handleDialogClose} className="dialog-button">
                             OK
                         </button>
                     </div>
-        </div>
+                </div>
             )}
         </div>
     );

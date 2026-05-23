@@ -8,7 +8,6 @@ import {
 } from "./quizOptions";
 import { generateQuiz } from "../app/generateQuiz";
 import { FlashCardSet } from "../app/flashCard";
-import { styles } from "./styles";
 import strings from "./strings.json";
 import Question from "./question";
 
@@ -20,10 +19,12 @@ export default function StartScreen()
   const [activeQuizSettings, setActiveQuizSettings] = useState<QuizSettings | null>(null);
   const [generatedQuiz, setGeneratedQuiz] = useState<FlashCardSet | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const handleQuizComplete = () => {
     setGeneratedQuiz(null);
     setActiveQuizSettings(null);
+    setErrorMessage("");
     setTopic("");
     setDifficulty(Difficulty.Easy);
     setNumQuestions(10);
@@ -43,12 +44,13 @@ export default function StartScreen()
 
     try {
       setIsLoading(true);
+      setErrorMessage("");
       const quiz = await generateQuiz(quizSettings);
       setActiveQuizSettings(quizSettings);
       setGeneratedQuiz(quiz);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Failed to generate quiz.";
-      alert(message);
+      setErrorMessage(message);
     } finally {
       setIsLoading(false);
     }
@@ -65,17 +67,25 @@ export default function StartScreen()
   }
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.title}>{strings.title}</h1>
+    <div className="quiz-container">
+      <h1 className="quiz-title">{strings.title}</h1>
 
-      <div style={styles.form}>
-        {/* Topic Dropdown */}
-        <div style={styles.field}>
-          <label style={styles.label}>{strings.labels.topic}</label>
+      <div className="quiz-form">
+        {errorMessage && (
+          <div className="error-banner" role="alert" aria-live="polite">
+            <p>{errorMessage}</p>
+            <button type="button" onClick={handleStart} className="secondary-button" disabled={isLoading || !topic}>
+              Retry
+            </button>
+          </div>
+        )}
+
+        <div className="quiz-field">
+          <label className="quiz-label">{strings.labels.topic}</label>
           <select
             value={topic}
             onChange={(e) => setTopic(e.target.value as Topic | "")}
-            style={styles.dropdown}
+            className="quiz-dropdown"
           >
             <option value="">{strings.placeholders.topic}</option>
             {Object.values(Topic).map((topicValue) => (
@@ -86,12 +96,11 @@ export default function StartScreen()
           </select>
         </div>
 
-        {/* Difficulty Radio Buttons */}
-        <div style={styles.field}>
-          <label style={styles.label}>{strings.labels.difficulty}</label>
-          <div style={styles.radioGroup}>
+        <div className="quiz-field">
+          <label className="quiz-label">{strings.labels.difficulty}</label>
+          <div className="quiz-radio-group">
             {Object.values(Difficulty).map((difficultyValue) => (
-              <label key={difficultyValue} style={styles.radioLabel}>
+              <label key={difficultyValue} className="quiz-radio-label">
                 <input
                   type="radio"
                   name={strings.form.difficultyName}
@@ -105,15 +114,14 @@ export default function StartScreen()
           </div>
         </div>
 
-        {/* Number of Questions Dropdown */}
-        <div style={styles.field}>
-          <label style={styles.label}>{strings.labels.questionCount}</label>
+        <div className="quiz-field">
+          <label className="quiz-label">{strings.labels.questionCount}</label>
           <select
             value={numQuestions}
             onChange={(e) =>
               setNumQuestions(Number(e.target.value) as QuestionCount)
             }
-            style={styles.dropdown}
+            className="quiz-dropdown"
           >
             {QUESTION_COUNTS.map((count) => (
               <option key={count} value={count}>
@@ -123,14 +131,10 @@ export default function StartScreen()
           </select>
         </div>
 
-        {/* Start Button */}
         <button
           onClick={handleStart}
           disabled={!topic || isLoading}
-          style={{
-            ...styles.button,
-            ...(topic && !isLoading ? {} : styles.buttonDisabled),
-          }}
+          className="quiz-button"
         >
           {isLoading ? "Generating..." : strings.buttons.start}
         </button>

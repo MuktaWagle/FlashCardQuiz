@@ -23,8 +23,6 @@ function extractJsonObject(rawResponse: string): string {
 export async function generateQuiz(settings: QuizSettings): Promise<FlashCardSet> {
     const prompt = buildPrompt(settings);
 
-    console.log("Generated Prompt:", prompt); // Debugging line
-
     const response = await llmClient.Generate(prompt);
     const jsonPayload = extractJsonObject(response);
 
@@ -38,6 +36,9 @@ export async function generateQuiz(settings: QuizSettings): Promise<FlashCardSet
     const validationResult = FlashCardSetSchema.safeParse(parsedResponse);
 
     if (!validationResult.success) {
+        if (import.meta.env.DEV) {
+            console.debug("Quiz validation issues:", validationResult.error.flatten());
+        }
         throw new Error(`LLM response validation failed: ${validationResult.error.message}`);
     }
 
