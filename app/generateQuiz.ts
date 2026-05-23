@@ -1,6 +1,6 @@
 import { QuizSettings } from "../ui/quizOptions";
-import { FlashCardSet, FlashCardSetSchema } from "../domain/flashCard";
-import { buildPrompt } from "../domain/llmRequest";
+import { FlashCardSet, FlashCardSetSchema } from "./flashCard";
+import { buildPrompt } from "./llmRequest";
 import * as llmClient from "./llmClient";
 
 function extractJsonObject(rawResponse: string): string {

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { FlashCardSet } from "../domain/flashCard";
+import { FlashCardSet } from "../app/flashCard";
 import { QuizSettings } from "./quizOptions";
 import { styles } from "./styles";
 

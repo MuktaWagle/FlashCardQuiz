@@ -3,184 +3,22 @@ Build a Flashcard Quiz game with:
 1. A polished UI.
 2. Game levels and progression.
 3. LLM-powered generation of new quiz questions via API.
-4. User stats and adaptive difficulty.
+4. User stats.
 
 **Product Scope**
 1. Users can choose a topic and difficulty.
-2. Users can play quiz rounds with score, lives, streak, and timer.
-3. Users can review incorrect answers.
-4. App can generate new flashcards using an LLM.
-5. App stores progress, history, and generated content.
+2. Users can play quiz rounds with a score.
+3. App can generate new flashcards using an LLM.
 
-**Target Platform**
-1. Web app first (desktop + mobile responsive).
-2. Optional later: desktop packaging or mobile app wrapper.
-
-**Suggested Tech Stack**
-1. Frontend: React + TypeScript + Tailwind CSS (or plain CSS if preferred).
-2. Backend: FastAPI (Python) or Node.js Express.
-3. Database: SQLite for local dev, PostgreSQL for production.
+**Tech Stack**
+1. React + TypeScript + Node.js
 4. LLM API: OpenAI-compatible API (or Anthropic/Gemini via provider adapter).
-5. Auth (optional MVP+): email/password or OAuth.
 
 **Core Features**
 1. Quiz Mode:
 - Choose topic, difficulty, and number of questions.
-- Show one card at a time with multiple choice or free-text mode.
+- Show one card at a time with multiple choice.
 - Immediate feedback and explanation.
-2. Game Mechanics:
-- Levels: Beginner, Intermediate, Advanced, Expert.
-- XP points, streak bonus, timer bonus.
-- Lives/health system per round.
-3. LLM Question Generation:
-- Generate questions by topic + level.
-- Include answer, distractors, explanation, and tags.
+2. LLM Question Generation:
+- Generate questions and answers by topic + level.
 - Validate and filter malformed output.
-4. Review & Learning:
-- Wrong-answer review session.
-- Spaced repetition queue (basic Leitner-style).
-5. Analytics:
-- Accuracy by topic.
-- Average response time.
-- Level progression and weekly trend.
-6. Content Management:
-- Manual card create/edit/delete.
-- AI-generated card approval queue.
-
-**UI/UX Specification**
-1. Screens:
-- Home dashboard.
-- Topic selection.
-- Quiz play screen.
-- Round summary.
-- Review mistakes.
-- Progress/stats.
-- Settings (API key/provider, theme, sound).
-2. UI Behavior:
-- Clean card layout with strong hierarchy.
-- Keyboard shortcuts (1-4 answers, Enter next, Esc pause).
-- Animated transitions between cards (150-250ms).
-- Accessibility: contrast, focus states, screen-reader labels.
-3. Responsive Requirements:
-- Mobile-first breakpoints.
-- Sticky score/timer on small screens.
-- Touch-friendly hit areas.
-
-**Game Design**
-1. Difficulty Rules:
-- Beginner: direct recall, short explanations.
-- Intermediate: scenario-based questions.
-- Advanced: trick options and deeper reasoning.
-- Expert: multi-concept and edge-case questions.
-2. Scoring:
-- Base points per correct answer.
-- Streak multiplier.
-- Time bonus.
-- Penalty for hints/incorrect attempts.
-3. Progression:
-- XP thresholds unlock levels/topics.
-- Rank badges.
-- Daily challenge mode.
-
-**LLM Integration Specification**
-1. Provider Abstraction:
-- Define one interface: generate_cards(topic, difficulty, count, format).
-- Implement adapters per provider.
-2. Prompt Requirements:
-- Ask for strict JSON output.
-- Require unique question text.
-- Require exactly one correct answer.
-- Require explanation field.
-3. Output Schema (minimum):
-- id
-- topic
-- difficulty
-- question
-- options (4)
-- correct_index
-- explanation
-- tags
-4. Validation Pipeline:
-- JSON schema validation.
-- Dedup check by normalized question hash.
-- Basic quality checks:
-- question length limits
-- no empty options
-- correct_index in range
-5. Safety & Guardrails:
-- Block unsafe categories by policy list.
-- Avoid personally harmful or illegal instructions.
-- Log rejected generations.
-
-**Data Model (High Level)**
-1. User:
-- id, name, created_at.
-2. Flashcard:
-- id, topic, difficulty, question, options_json, correct_index, explanation, source(manual|llm), approved.
-3. QuizAttempt:
-- id, user_id, flashcard_id, selected_index, correct, response_time_ms, created_at.
-4. Session:
-- id, user_id, topic, difficulty, score, xp_earned, started_at, ended_at.
-5. ReviewQueue:
-- user_id, flashcard_id, next_review_at, interval_days, ease_factor.
-
-**Non-Functional Requirements**
-1. Performance:
-- Quiz screen interaction under 100ms local response.
-- LLM generation request timeout 20-30s.
-2. Reliability:
-- Retry failed LLM calls (max 2 retries with backoff).
-- Fallback to local question bank if API fails.
-3. Security:
-- Keep API keys server-side (never expose in frontend).
-- Rate limiting per user/IP on generation endpoints.
-4. Observability:
-- Structured logs for generation failures and validation rejects.
-- Basic usage metrics dashboard.
-
-**API Endpoints (Example)**
-1. POST /quiz/start
-2. POST /quiz/answer
-3. GET /quiz/session/{id}/summary
-4. POST /cards/generate
-5. POST /cards/approve
-6. GET /stats/overview
-7. GET /review/next
-8. POST /review/result
-
-**MVP Definition (Phase 1)**
-1. Topic + difficulty selection.
-2. Quiz play with score and summary.
-3. Local DB for cards and attempts.
-4. LLM generate cards endpoint with validation.
-5. Basic dashboard with accuracy and streak.
-
-**Phase 2**
-1. Spaced repetition.
-2. Better animations and sound.
-3. Daily challenge and badges.
-4. Multi-provider LLM support.
-
-**Acceptance Criteria**
-1. User can complete a 10-question round end-to-end.
-2. LLM-generated cards pass schema validation and can be played.
-3. Invalid LLM outputs are rejected gracefully.
-4. Progress stats update after each session.
-5. App is usable on mobile and desktop.
-
-**Testing Plan**
-1. Unit tests:
-- scoring logic
-- difficulty progression
-- JSON validator
-2. Integration tests:
-- /cards/generate with mocked LLM response
-- full quiz session flow
-3. UI tests:
-- answer selection, timer behavior, summary rendering
-4. Edge cases:
-- empty card pool
-- duplicate generated cards
-- API timeout/failure fallback
-
-If you want, I can provide the next artifact: a 2-week implementation plan with task breakdown and estimated hours for each feature.

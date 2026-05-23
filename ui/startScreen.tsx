@@ -7,7 +7,7 @@ import {
   QuizSettings,
 } from "./quizOptions";
 import { generateQuiz } from "../app/generateQuiz";
-import { FlashCardSet } from "../domain/flashCard";
+import { FlashCardSet } from "../app/flashCard";
 import { styles } from "./styles";
 import strings from "./strings.json";
 import Question from "./question";
