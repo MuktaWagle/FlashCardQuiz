@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Topic,
   Difficulty,
@@ -6,16 +6,31 @@ import {
   QuestionCount,
   QuizSettings,
 } from "./quizOptions";
+import { generateQuiz } from "../app/generateQuiz";
+import { FlashCardSet } from "../domain/flashCard";
 import { styles } from "./styles";
 import strings from "./strings.json";
+import Question from "./question";
 
 export default function StartScreen()
 {
   const [topic, setTopic] = useState<Topic | "">("");
   const [difficulty, setDifficulty] = useState<Difficulty>(Difficulty.Easy);
   const [numQuestions, setNumQuestions] = useState<QuestionCount>(10);
+  const [activeQuizSettings, setActiveQuizSettings] = useState<QuizSettings | null>(null);
+  const [generatedQuiz, setGeneratedQuiz] = useState<FlashCardSet | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const handleStart = () => {
+  const handleQuizComplete = () => {
+    setGeneratedQuiz(null);
+    setActiveQuizSettings(null);
+    setTopic("");
+    setDifficulty(Difficulty.Easy);
+    setNumQuestions(10);
+    setIsLoading(false);
+  };
+
+  const handleStart = async () => {
     if (!topic) {
       return;
     }
@@ -26,17 +41,28 @@ export default function StartScreen()
       numQuestions,
     };
 
-    console.log({
-      ...quizSettings,
-    });
-
-    const startMessage = strings.messages.startingQuiz
-      .replace("{topic}", topic)
-      .replace("{difficulty}", difficulty)
-      .replace("{numQuestions}", String(numQuestions));
-
-    alert(startMessage);
+    try {
+      setIsLoading(true);
+      const quiz = await generateQuiz(quizSettings);
+      setActiveQuizSettings(quizSettings);
+      setGeneratedQuiz(quiz);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to generate quiz.";
+      alert(message);
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  if (generatedQuiz && activeQuizSettings) {
+    return (
+      <Question
+        settings={activeQuizSettings}
+        flashCardSet={generatedQuiz}
+        onQuizComplete={handleQuizComplete}
+      />
+    );
+  }
 
   return (
     <div style={styles.container}>
@@ -100,13 +126,13 @@ export default function StartScreen()
         {/* Start Button */}
         <button
           onClick={handleStart}
-          disabled={!topic}
+          disabled={!topic || isLoading}
           style={{
             ...styles.button,
-            ...(topic ? {} : styles.buttonDisabled),
+            ...(topic && !isLoading ? {} : styles.buttonDisabled),
           }}
         >
-          {strings.buttons.start}
+          {isLoading ? "Generating..." : strings.buttons.start}
         </button>
       </div>
     </div>
